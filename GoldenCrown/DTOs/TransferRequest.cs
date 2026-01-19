@@ -3,10 +3,7 @@
 namespace GoldenCrown.DTOs
 {
     public class TransferRequest
-    {
-        [Required]
-        public string Token { get; set; }
-
+    {    
         [Required]
         public string ReceiverLogin { get; set; }
 

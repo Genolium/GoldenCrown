@@ -1,4 +1,5 @@
-﻿using GoldenCrown.DTOs;
+﻿using GoldenCrown.Attributes;
+using GoldenCrown.DTOs;
 using GoldenCrown.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -6,6 +7,7 @@ namespace GoldenCrown.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [MyAuthorize] 
     public class FinanceController : ControllerBase
     {
         private readonly IFinanceService _financeService;
@@ -16,16 +18,16 @@ namespace GoldenCrown.Controllers
         }
 
         [HttpGet("balance")]
-        public async Task<IActionResult> GetBalance([FromQuery] string token)
+        public async Task<IActionResult> GetBalance() 
         {
             try
             {
-                var balance = await _financeService.GetBalanceAsync(token);
+                var balance = await _financeService.GetBalanceAsync();
                 return Ok(new BalanceResponse { Balance = balance });
             }
             catch (Exception ex)
             {
-                return Unauthorized(new { Message = ex.Message });
+                return BadRequest(new { Message = ex.Message });
             }
         }
 
@@ -67,7 +69,7 @@ namespace GoldenCrown.Controllers
             }
             catch (Exception ex)
             {
-                return Unauthorized(new { Message = ex.Message });
+                return BadRequest(new { Message = ex.Message });
             }
         }
     }

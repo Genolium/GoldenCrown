@@ -1,4 +1,5 @@
 using GoldenCrown.Data;
+using GoldenCrown.Middleware;
 using GoldenCrown.Services;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,6 +13,8 @@ builder.Services.AddOpenApi();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddHttpContextAccessor();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
@@ -33,6 +36,10 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseRouting();
+
+app.UseMiddleware<AuthorizationMiddleware>();
 
 app.UseAuthorization();
 

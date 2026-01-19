@@ -8,32 +8,28 @@ namespace GoldenCrown.Services
     public class FinanceService : IFinanceService
     {
         private readonly ApplicationDbContext _context;
+        private readonly IHttpContextAccessor _httpContextAccessor; // Доступ к контексту
 
-        public FinanceService(ApplicationDbContext context)
+        public FinanceService(ApplicationDbContext context, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
+            _httpContextAccessor = httpContextAccessor;
         }
 
-        // Ищем пользователя по токену
-        private async Task<User> GetUserByTokenAsync(string token)
+        private User GetCurrentUser()
         {
-            var session = await _context.Sessions
-                .Include(s => s.User)
-                .ThenInclude(u => u.Accounts) // Сразу подгружаем счета
-                .FirstOrDefaultAsync(s => s.Token == token);
+            var context = _httpContextAccessor.HttpContext;
+            if (context == null || !context.Items.ContainsKey("User"))
+            {
+                throw new Exception("Пользователь не найден в контексте (ошибка авторизации)");
+            }
 
-            if (session == null)
-                throw new Exception("Сессия не найдена или токен неверен");
-
-            if (session.ExpiresAt < DateTime.UtcNow)
-                throw new Exception("Срок действия сессии истек");
-
-            return session.User;
+            return (User)context.Items["User"];
         }
 
-        public async Task<decimal> GetBalanceAsync(string token)
+        public async Task<decimal> GetBalanceAsync()
         {
-            var user = await GetUserByTokenAsync(token);
+            var user = GetCurrentUser();
             var account = user.Accounts.FirstOrDefault();
 
             if (account == null)
@@ -44,7 +40,9 @@ namespace GoldenCrown.Services
 
         public async Task TransferAsync(TransferRequest request)
         {
-            var sender = await GetUserByTokenAsync(request.Token);
+            var sender = GetCurrentUser();
+
+            _context.Attach(sender);
             var senderAccount = sender.Accounts.FirstOrDefault();
 
             if (senderAccount == null)
@@ -82,7 +80,9 @@ namespace GoldenCrown.Services
 
         public async Task DepositAsync(DepositRequest request)
         {
-            var user = await GetUserByTokenAsync(request.Token);
+            var user = GetCurrentUser();
+            _context.Attach(user);
+
             var account = user.Accounts.FirstOrDefault();
 
             if (account == null)
@@ -104,7 +104,8 @@ namespace GoldenCrown.Services
 
         public async Task<List<TransactionResponse>> GetHistoryAsync(TransactionHistoryRequest request)
         {
-            var user = await GetUserByTokenAsync(request.Token);
+            var user = GetCurrentUser();
+            _context.Attach(user);
 
             var query = _context.Transactions
                 .AsNoTracking() 

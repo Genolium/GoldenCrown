@@ -4,9 +4,6 @@ namespace GoldenCrown.DTOs
 {
     public class TransactionHistoryRequest
     {
-        [FromQuery(Name = "token")] 
-        public string Token { get; set; }
-
         public DateTime? From { get; set; }
         public DateTime? To { get; set; }
 
