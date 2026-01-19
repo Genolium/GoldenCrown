@@ -25,6 +25,8 @@ builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IFinanceService, FinanceService>();
 
+builder.Services.AddHostedService<SessionCleanupService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
