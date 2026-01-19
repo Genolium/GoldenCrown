@@ -2,7 +2,7 @@
   "info": {
     "_postman_id": "b3e34d2a-1234-4321-abcd-1234567890ab",
     "name": "GoldenCrown API",
-    "description": "Коллекция запросов для API GoldenCrown",
+    "description": "API of banking app GoldenCrown",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
@@ -235,7 +235,7 @@
   "variable": [
     {
       "key": "baseUrl",
-      "value": "https://localhost:7194",
+      "value": "http://localhost:7194",
       "type": "string"
     },
     {

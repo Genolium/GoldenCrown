@@ -47,4 +47,18 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    try
+    {
+        dbContext.Database.Migrate();
+        Console.WriteLine("Миграции успешно применены");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Ошибка миграции: {ex.Message}");
+    }
+}
+
 app.Run();
