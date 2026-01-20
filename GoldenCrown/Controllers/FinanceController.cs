@@ -1,28 +1,30 @@
 ﻿using GoldenCrown.Attributes;
 using GoldenCrown.DTOs;
-using GoldenCrown.Services;
+using GoldenCrown.Features.Finance.Commands;
+using GoldenCrown.Features.Finance.Queries;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GoldenCrown.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
-    [MyAuthorize] 
+    [Route("api/[controller]")]
+    [MyAuthorize]
     public class FinanceController : ControllerBase
     {
-        private readonly IFinanceService _financeService;
+        private readonly IMediator _mediator;
 
-        public FinanceController(IFinanceService financeService)
+        public FinanceController(IMediator mediator)
         {
-            _financeService = financeService;
+            _mediator = mediator;
         }
 
         [HttpGet("balance")]
-        public async Task<IActionResult> GetBalance() 
+        public async Task<IActionResult> GetBalance()
         {
             try
             {
-                var balance = await _financeService.GetBalanceAsync();
+                var balance = await _mediator.Send(new GetBalanceQuery());
                 return Ok(new BalanceResponse { Balance = balance });
             }
             catch (Exception ex)
@@ -32,11 +34,11 @@ namespace GoldenCrown.Controllers
         }
 
         [HttpPost("deposit")]
-        public async Task<IActionResult> Deposit([FromBody] DepositRequest request)
+        public async Task<IActionResult> Deposit([FromBody] DepositCommand command)
         {
             try
             {
-                await _financeService.DepositAsync(request);
+                await _mediator.Send(command);
                 return Ok(new { Message = "Счет успешно пополнен" });
             }
             catch (Exception ex)
@@ -46,11 +48,11 @@ namespace GoldenCrown.Controllers
         }
 
         [HttpPost("transfer")]
-        public async Task<IActionResult> Transfer([FromBody] TransferRequest request)
+        public async Task<IActionResult> Transfer([FromBody] TransferCommand command)
         {
             try
             {
-                await _financeService.TransferAsync(request);
+                await _mediator.Send(command);
                 return Ok(new { Message = "Перевод выполнен успешно" });
             }
             catch (Exception ex)
@@ -60,12 +62,12 @@ namespace GoldenCrown.Controllers
         }
 
         [HttpGet("history")]
-        public async Task<IActionResult> GetHistory([FromQuery] TransactionHistoryRequest request)
+        public async Task<IActionResult> GetHistory([FromQuery] GetHistoryQuery query)
         {
             try
             {
-                var history = await _financeService.GetHistoryAsync(request);
-                return Ok(history);
+                var result = await _mediator.Send(query);
+                return Ok(result);
             }
             catch (Exception ex)
             {
