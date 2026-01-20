@@ -2,8 +2,13 @@ using GoldenCrown.Data;
 using GoldenCrown.Middleware;
 using GoldenCrown.Services;
 using Microsoft.EntityFrameworkCore;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
 // Add services to the container.
 builder.Services.AddControllers();

@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-
-namespace GoldenCrown.DTOs
+﻿namespace GoldenCrown.DTOs
 {
     public class TransactionHistoryRequest
     {
