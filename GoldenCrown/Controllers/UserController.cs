@@ -1,47 +1,42 @@
-﻿using GoldenCrown.DTOs;
-using GoldenCrown.Services;
+﻿using GoldenCrown.DTOs; 
+using GoldenCrown.Features.Users.Commands;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GoldenCrown.Controllers
 {
-    [ApiController] 
-    [Route("api/[controller]")] 
-    public class UserController : Controller
+    [ApiController]
+    [Route("api/[controller]")]
+    public class UserController : ControllerBase
     {
-        private readonly IUserService _userService;
+        private readonly IMediator _mediator;
 
-        public UserController(IUserService userService)
+        public UserController(IMediator mediator)
         {
-            _userService = userService;
+            _mediator = mediator;
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] RegisterRequest request)
+        public async Task<IActionResult> Register([FromBody] RegisterUserCommand command)
         {
-            var result = await _userService.RegisterAsync(request);
-
-            if (!result.IsSuccess)
+            try
             {
-                // Вернет 400 Bad Request с текстом ошибки
-                return BadRequest(new { Error = result.ErrorMessage });
+                var message = await _mediator.Send(command);
+                return Ok(new { Message = message });
             }
-
-            return Ok(new { Message = "Регистрация прошла успешно" });
+            catch (Exception ex)
+            {
+                return BadRequest(new { Message = ex.Message });
+            }
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginRequest request)
+        public async Task<IActionResult> Login([FromBody] LoginUserCommand command)
         {
-            var token = await _userService.LoginAsync(request);
+            var token = await _mediator.Send(command);
+            if (token == null) return Unauthorized(new { Message = "Неверный логин или пароль" });
 
-            if (token == null)
-            {
-                // Вернет 401 Unauthorized
-                return Unauthorized(new { Message = "Неверный логин или пароль" });
-            }
-
-            // Вернет 200 OK и JSON с токеном
-            return Ok(new LoginResponse { Token = token });
+            return Ok(new LoginResponse { Token = token }); 
         }
     }
 }
