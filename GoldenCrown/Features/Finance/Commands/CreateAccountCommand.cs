@@ -2,9 +2,8 @@
 
 namespace GoldenCrown.Features.Finance.Commands
 {
-    public class DepositCommand : IRequest<Unit> // Unit = void 
+    public class CreateAccountCommand : IRequest<Unit>
     {
-        public decimal Amount { get; set; }
         public string Currency { get; set; }
     }
 }

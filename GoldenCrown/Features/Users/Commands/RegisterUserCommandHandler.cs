@@ -34,7 +34,8 @@ namespace GoldenCrown.Features.Users.Commands
             {
                 Id = Guid.NewGuid(),
                 UserId = newUser.Id,
-                Balance = 0
+                Balance = 0,
+                Currency = "RUB"
             };
 
             _context.Users.Add(newUser);

@@ -24,8 +24,8 @@ namespace GoldenCrown.Controllers
         {
             try
             {
-                var balance = await _mediator.Send(new GetBalanceQuery());
-                return Ok(new BalanceResponse { Balance = balance });
+                var accounts = await _mediator.Send(new GetBalanceQuery());
+                return Ok(new BalanceResponse { Accounts = accounts.Accounts });
             }
             catch (Exception ex)
             {
@@ -68,6 +68,20 @@ namespace GoldenCrown.Controllers
             {
                 var result = await _mediator.Send(query);
                 return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { Message = ex.Message });
+            }
+        }
+
+        [HttpPost("account")]
+        public async Task<IActionResult> CreateAccount([FromBody] CreateAccountCommand command)
+        {
+            try
+            {
+                await _mediator.Send(command);
+                return Ok(new { Message = "Счет успешно открыт" });
             }
             catch (Exception ex)
             {

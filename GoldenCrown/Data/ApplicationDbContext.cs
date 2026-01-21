@@ -75,13 +75,15 @@ namespace GoldenCrown.Data
                  {
                      Id = adminAccountId,
                      UserId = adminId, // Привязываем к админу
-                     Balance = 1000000.00m // Миллион на счету
+                     Balance = 1000000.00m, // Миллион на счету
+                     Currency = "RUB"
                  },
                  new Account
                  {
                      Id = userAccountId,
                      UserId = userId, // Привязываем к обычному юзеру
-                     Balance = 100.00m
+                     Balance = 100.00m,
+                     Currency = "RUB"
                  }
             );
         }

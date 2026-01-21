@@ -2,6 +2,6 @@
 {
     public class BalanceResponse
     {
-        public decimal Balance { get; set; }
+        public List<AccountDto> Accounts { get; set; }
     }
 }
