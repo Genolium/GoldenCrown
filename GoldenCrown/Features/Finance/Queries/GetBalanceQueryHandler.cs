@@ -1,9 +1,10 @@
-﻿using MediatR;
+﻿using GoldenCrown.DTOs;
 using GoldenCrown.Models;
+using MediatR;
 
 namespace GoldenCrown.Features.Finance.Queries
 {
-    public class GetBalanceQueryHandler : IRequestHandler<GetBalanceQuery, decimal>
+    public class GetBalanceQueryHandler : IRequestHandler<GetBalanceQuery, BalanceResponse>
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
 
@@ -12,17 +13,20 @@ namespace GoldenCrown.Features.Finance.Queries
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public Task<decimal> Handle(GetBalanceQuery request, CancellationToken cancellationToken)
+        public async Task<BalanceResponse> Handle(GetBalanceQuery request, CancellationToken cancellationToken)
         {
             // Берем юзера из HttpContext (положил Middleware)
             var context = _httpContextAccessor.HttpContext;
             if (context?.Items["User"] is not User user)
                 throw new Exception("Пользователь не авторизован");
 
-            var account = user.Accounts.FirstOrDefault();
-            if (account == null) throw new Exception("Счет не найден");
+            var accountsDto = user.Accounts.Select(a => new AccountDto
+            {
+                Currency = a.Currency,
+                Balance = a.Balance
+            }).ToList();
 
-            return Task.FromResult(account.Balance);
+            return new BalanceResponse { Accounts = accountsDto };
         }
     }
 }

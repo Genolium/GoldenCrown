@@ -26,8 +26,10 @@ namespace GoldenCrown.Features.Finance.Commands
             _context.Attach(user);
 
             // Логика пополнения
-            var account = user.Accounts.FirstOrDefault();
-            if (account == null) throw new Exception("Счет не найден");
+            var account = user.Accounts.FirstOrDefault(a => a.Currency == request.Currency);
+
+            if (account == null)
+                throw new Exception($"У вас нет счета в валюте {request.Currency}. Сначала создайте его.");
 
             account.Balance += request.Amount;
 
@@ -37,7 +39,8 @@ namespace GoldenCrown.Features.Finance.Commands
                 Amount = request.Amount,
                 Date = DateTime.UtcNow,
                 SenderId = null,
-                ReceiverId = user.Id
+                ReceiverId = user.Id,
+                Currency = request.Currency
             };
 
             _context.Transactions.Add(transaction);

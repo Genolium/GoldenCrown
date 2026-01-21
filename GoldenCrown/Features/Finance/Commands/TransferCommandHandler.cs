@@ -26,18 +26,16 @@ namespace GoldenCrown.Features.Finance.Commands
             try
             {
                 _context.Attach(sender);
-                var senderAccount = sender.Accounts.FirstOrDefault();
-
-                if (senderAccount == null) throw new Exception("Счет отправителя не найден");
+                var senderAccount = sender.Accounts.FirstOrDefault(a => a.Currency == request.Currency);
+                if (senderAccount == null) throw new Exception($"У вас нет счета в {request.Currency}");
                 if (senderAccount.Balance < request.Amount) throw new Exception("Недостаточно средств");
 
-                var receiver = await _context.Users
-                    .Include(u => u.Accounts)
+                var receiver = await _context.Users.Include(u => u.Accounts)
                     .FirstOrDefaultAsync(u => u.Login == request.ReceiverLogin, cancellationToken);
-
                 if (receiver == null) throw new Exception("Получатель не найден");
-                var receiverAccount = receiver.Accounts.FirstOrDefault();
-                if (receiverAccount == null) throw new Exception("Счет получателя не найден");
+
+                var receiverAccount = receiver.Accounts.FirstOrDefault(a => a.Currency == request.Currency);
+                if (receiverAccount == null) throw new Exception($"У получателя нет счета в {request.Currency}");
 
                 senderAccount.Balance -= request.Amount;
                 receiverAccount.Balance += request.Amount;
@@ -48,7 +46,8 @@ namespace GoldenCrown.Features.Finance.Commands
                     Amount = request.Amount,
                     Date = DateTime.UtcNow,
                     SenderId = sender.Id,
-                    ReceiverId = receiver.Id
+                    ReceiverId = receiver.Id,
+                    Currency = request.Currency
                 };
 
                 _context.Transactions.Add(transactionRecord);

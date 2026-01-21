@@ -86,7 +86,7 @@
       "name": "Finance",
       "item": [
         {
-          "name": "Get Balance",
+          "name": "Get Balance (All Accounts)",
           "request": {
             "method": "GET",
             "header": [],
@@ -105,13 +105,41 @@
           "response": []
         },
         {
-          "name": "Deposit",
+          "name": "Create Account (USD)",
           "request": {
             "method": "POST",
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n  \"amount\": 1000\r\n}",
+              "raw": "{\r\n  \"currency\": \"USD\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/finance/account",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "finance",
+                "account"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Deposit (RUB)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"amount\": 1000,\r\n  \"currency\": \"RUB\"\r\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -133,13 +161,41 @@
           "response": []
         },
         {
-          "name": "Transfer",
+          "name": "Deposit (USD)",
           "request": {
             "method": "POST",
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n  \"receiverLogin\": \"admin\",\r\n  \"amount\": 100\r\n}",
+              "raw": "{\r\n  \"amount\": 100,\r\n  \"currency\": \"USD\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/finance/deposit",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "finance",
+                "deposit"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Transfer (RUB)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"receiverLogin\": \"admin\",\r\n  \"amount\": 100,\r\n  \"currency\": \"RUB\"\r\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -212,26 +268,6 @@
       }
     ]
   },
-  "event": [
-    {
-      "listen": "prerequest",
-      "script": {
-        "type": "text/javascript",
-        "exec": [
-          ""
-        ]
-      }
-    },
-    {
-      "listen": "test",
-      "script": {
-        "type": "text/javascript",
-        "exec": [
-          ""
-        ]
-      }
-    }
-  ],
   "variable": [
     {
       "key": "baseUrl",
